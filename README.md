@@ -1,0 +1,2 @@
+# CASA0005_inequality_index
+inequality_index
