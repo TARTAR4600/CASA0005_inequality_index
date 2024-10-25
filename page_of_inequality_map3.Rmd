@@ -1,0 +1,57 @@
+---
+title: "The Map of Gender Inequality Index"  
+---
+
+## Introduction
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+```
+
+The **Gender Inequality Index (GII)** is a composite measure developed by the United Nations Development Programme (UNDP) to assess gender disparities in various dimensions of human development[^1]. It highlights the inequalities between men and women in three critical areas: reproductive health, empowerment, and labor market participation.
+
+[^1]: [1]United Nations Development Programme (2023) *Gender Inequality Index (GII) - Statistical Annex 2023/2024.* <https://hdr.undp.org/sites/default/files/2023-24_HDR/HDR23-24_Statistical_Annex_GII_Table.xlsx>
+
+This page transforms those statistical insights into an interactive map, allowing users to explore gender inequality patterns geographically.The map of the world provided by ESRI[^2].
+
+[^2]: [2]ArcGIS Hub (n.d.) *World Countries Generalized.* <https://hub.arcgis.com/datasets/2b93b06dc0dc4e809d3c8db5cb96ba69_0/explore?location=-0.207545%2C0.000000%2C1.41>
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+library(sf)
+library(here)
+library(dplyr)
+library(countrycode)
+library(readr)
+library(janitor)
+
+World_map<-st_read(here::here("World_Countries_(Generalized)_9029012925078512962.geojson"))
+Index2 <- read_csv(here::here("inequality indexUTF8.csv"))
+
+World_map2<-World_map %>%
+  mutate(isoname=countrycode::countrycode(World_map[[2]], origin="country.name", destination = 'iso.name.en') )
+Index_renamed<-Index2 %>%
+  mutate(isoname=countrycode::countrycode(Index2[[2]], origin="country.name", destination = 'iso.name.en') )
+
+World_Index<-World_map2 %>%
+  left_join(Index_renamed, by = "isoname") %>%
+  clean_names() %>%
+  distinct() 
+```
+
+```{r map drawing, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+tmap_mode("view")
+tm_shape(World_Index) +
+  tm_polygons("gender_inequality_index", 
+               alpha = 0.8, 
+               title = "Gender Inequality Index",
+               style = "cont", 
+               palette = "Blues", 
+               border.col = "black", popup.vars = "gender_inequality_index") +
+  tm_borders() +
+  tm_layout(legend.outside = TRUE) 
+
+```
+
+## Referance
