@@ -25,10 +25,12 @@ library(readr)
 library(janitor)
 
 World_map<-st_read(here::here("World_Countries_(Generalized)_9029012925078512962.geojson"))
+# Adding a blank line between each line of code makes it more organized and easier to follow.
 Index2 <- read_csv(here::here("inequality indexUTF8.csv"))
 
 World_map2<-World_map %>%
   mutate(isoname=countrycode::countrycode(World_map[[2]], origin="country.name", destination = 'iso.name.en') )
+#Adding a blank line between each line of code makes it more organized and easier to follow.
 Index_renamed<-Index2 %>%
   mutate(isoname=countrycode::countrycode(Index2[[2]], origin="country.name", destination = 'iso.name.en') )
 
@@ -40,6 +42,9 @@ World_Index<-World_map2 %>%
 
 ```{r map drawing, echo=FALSE, message=FALSE, warning=FALSE}
 
+#library tmap_mode
+
+library(tmap)
 
 tmap_mode("view")
 tm_shape(World_Index) +
